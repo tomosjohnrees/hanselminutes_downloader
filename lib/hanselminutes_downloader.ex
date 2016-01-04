@@ -26,4 +26,9 @@ defmodule HanselminutesDownloader do
   def extract_mp3_name([x | tail], result) do
     extract_mp3_name(tail, [x | result])
   end
+
+  def save_mp3(url, name) do
+    %HTTPoison.Response{body: body} = HTTPoison.get!(url)
+    File.write!( name <> ".mp3", body)
+  end
 end
