@@ -13,4 +13,17 @@ defmodule HanselminutesDownloader do
     |> Floki.find("a")
     |> Floki.attribute("href")
   end
+
+  def extract_mp3_name(url) do
+    url
+    |> String.codepoints
+    |> Enum.reverse
+    |> extract_mp3_name([])
+  end
+  def extract_mp3_name([x, "/" | tail], result) do
+    [ x | result ] |> Enum.join
+  end
+  def extract_mp3_name([x | tail], result) do
+    extract_mp3_name(tail, [x | result])
+  end
 end
