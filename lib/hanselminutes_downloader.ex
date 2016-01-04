@@ -7,6 +7,13 @@ defmodule HanselminutesDownloader do
     |> Enum.map(fn(path) -> "http://hanselminutes.com" <> path end)
   end
 
+  def k_v_pair_name_url(urls) do
+    urls
+    |> Enum.map(fn(podcast_url) ->
+      { :"#{podcast_url |> extract_podcast_name}", podcast_url }
+    end)
+  end
+
   def find_all_urls(url) do
     %HTTPoison.Response{body: body} = HTTPoison.get!(url)
     body
@@ -32,17 +39,17 @@ defmodule HanselminutesDownloader do
     |> is_mp3?
   end
 
-  def extract_mp3_name(url) do
+  def extract_podcast_name(url) do
     url
     |> String.codepoints
     |> Enum.reverse
-    |> extract_mp3_name([])
+    |> extract_podcast_name([])
   end
-  def extract_mp3_name([x, "/" | tail], result) do
+  def extract_podcast_name([x, "/" | _], result) do
     [ x | result ] |> Enum.join
   end
-  def extract_mp3_name([x | tail], result) do
-    extract_mp3_name(tail, [x | result])
+  def extract_podcast_name([x | tail], result) do
+    extract_podcast_name(tail, [x | result])
   end
 
   def save_mp3(url, name) do
