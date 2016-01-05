@@ -1,4 +1,17 @@
 defmodule HanselminutesDownloader do
+  def main do
+    sample = find_podcast_urls
+    |> k_v_pair_name_url
+
+    [a,b | _] = sample
+    small_sample = [a,b]
+
+    small_sample
+    |> Enum.map(fn({name, url}) -> {name, url |> find_all_urls} end)
+    |> Enum.map(fn({name, urls}) -> {name, urls |> filter_for_mp3} end)
+    |> Enum.map(fn({name, url}) -> save_mp3(url |> to_string, name) end)
+  end
+
   def find_podcast_urls do
     %HTTPoison.Response{body: body} = HTTPoison.get!("http://hanselminutes.com/archives")
     body
@@ -21,8 +34,6 @@ defmodule HanselminutesDownloader do
     |> Floki.attribute("href")
   end
 
-# e.g. filter_for_mp3 [".com/bla/file.mp3", "www.bla.com/about.index"]
-#      => [".com/bla/file.mp3"]
   def filter_for_mp3(list) do
     list
     |> Enum.filter(fn(url) -> url |> is_mp3? end)
@@ -54,6 +65,6 @@ defmodule HanselminutesDownloader do
 
   def save_mp3(url, name) do
     %HTTPoison.Response{body: body} = HTTPoison.get!(url)
-    File.write!( name <> ".mp3", body)
+    File.write!( "#{name |> to_string}.mp3", body)
   end
 end
