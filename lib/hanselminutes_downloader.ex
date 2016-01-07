@@ -36,18 +36,15 @@ defmodule HanselminutesDownloader do
 
   defp filter_for_mp3(list) do
     list
-    |> Enum.filter(fn(url) -> url |> is_mp3? end)
+    |> Enum.filter(fn(url) -> url |> is_mp3 end)
   end
 
-  defp is_mp3?([ "3", "p", "m", "." | _ ]),
+  defp is_mp3([_]),
     do: true
-  defp is_mp3?([ _ | _ ]),
+  defp is_mp3(nil),
     do: false
-  defp is_mp3?(url) do
-    url
-    |> String.codepoints
-    |> Enum.reverse
-    |> is_mp3?
+  defp is_mp3(url) do
+    Regex.run( ~r{\.mp3$}, url) |> is_mp3
   end
 
   defp extract_podcast_name(url) do
